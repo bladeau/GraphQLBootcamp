@@ -17,10 +17,10 @@ const posts=[
   {id:'5', title:'title e', body:'body e', published:false, author:'3'},
 ]
 const comments=[
-  {id:'1', text:'comment a', author:'1'},
-  {id:'2', text:'comment b', author:'2'},
-  {id:'3', text:'comment c', author:'3'},
-  {id:'4', text:'comment d', author:'1'},
+  {id:'1', text:'comment a', author:'1', post:'1'},
+  {id:'2', text:'comment b', author:'2', post:'1'},
+  {id:'3', text:'comment c', author:'3', post:'5'},
+  {id:'4', text:'comment d', author:'1', post:'3'},
 ]
 
 // Type definitions (schema)
@@ -37,6 +37,7 @@ const typeDefs =`
     id: ID!
     text: String!
     author: User!
+    post: Post!
   }
   type Product {
     id: ID!
@@ -52,7 +53,7 @@ const typeDefs =`
     email: String!
     age: Int
     posts: [Post!]
-    comments: [Comment]
+    comments: [Comment]!
   }
   type Post{
     id: ID!
@@ -60,6 +61,7 @@ const typeDefs =`
     body: String
     published: Boolean!
     author: User!
+    comments: [Comment]!
   }
 `
 
@@ -111,6 +113,11 @@ const resolvers = {
         return users.find((user)=>{
           return user.id === parent.author
         })
+    },
+    comments(parent, args, ctx, info){
+      return comments.filter((comment)=>{
+        return comment.post === parent.id
+      })
     }
   },
   User:{
@@ -130,10 +137,14 @@ const resolvers = {
       return users.find((user)=>{
         return user.id === parent.author
       })
+    },
+    post(parent, args, ctx, info){
+      return posts.find((post)=>{
+        return post.id === parent.post
+      })
     }
   }
 }
-
 
 
 
